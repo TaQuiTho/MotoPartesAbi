@@ -63,4 +63,17 @@ for titulo, valor in stats:
     ctk.CTkLabel(card, text=valor, text_color="#E8751A",
                  font=ctk.CTkFont(size=22, weight="bold")).pack(pady=(2,12))
 
+alertas_label = ctk.CTkLabel(content, text="⚠️  Alertas Críticas",
+                              font=ctk.CTkFont(size=14, weight="bold"),
+                              text_color="#E8751A")
+alertas_label.pack(anchor="w", pady=(20, 8))
+
+alertas_frame = ctk.CTkFrame(content, fg_color="#1a1a1a", corner_radius=10)
+alertas_frame.pack(fill="x")
+
+sin_alertas = ctk.CTkLabel(alertas_frame, text="Sin alertas por el momento",
+                            text_color="#555555",
+                            font=ctk.CTkFont(size=12))
+sin_alertas.pack(pady=20)
+
 app.mainloop()
