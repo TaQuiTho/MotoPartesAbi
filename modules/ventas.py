@@ -6,16 +6,24 @@ def mostrar_ventas(frame):
     content = ctk.CTkFrame(frame, fg_color="#0f0f0f")
     content.pack(fill="both", expand=True, padx=20, pady=20)
 
-    ctk.CTkLabel(content, text="Ventas",
-                 font=ctk.CTkFont(size=18, weight="bold"),
-                 text_color="#FFFFFF").pack(anchor="w", pady=(0,10))
+    def recargar():
+        for widget in content.winfo_children():
+            widget.destroy()
+        construir(content)
 
-    ctk.CTkButton(content, text="+ Nueva Venta",
-                  fg_color="#E8751A", hover_color="#c45e0e",
-                  text_color="#FFFFFF",
-                  command=lambda: nueva_venta(content)).pack(anchor="w", pady=(0,15))
+    def construir(c):
+        ctk.CTkLabel(c, text="Ventas",
+                     font=ctk.CTkFont(size=18, weight="bold"),
+                     text_color="#FFFFFF").pack(anchor="w", pady=(0,10))
 
-    mostrar_historial(content)
+        ctk.CTkButton(c, text="+ Nueva Venta",
+                      fg_color="#E8751A", hover_color="#c45e0e",
+                      text_color="#FFFFFF",
+                      command=lambda: nueva_venta(recargar)).pack(anchor="w", pady=(0,15))
+
+        mostrar_historial(c)
+
+    construir(content)
 
 def mostrar_historial(content):
     conn = conectar()
@@ -41,7 +49,7 @@ def mostrar_historial(content):
             ctk.CTkLabel(fila, text=f"${v[2]:.2f}", text_color="#E8751A",
                          width=100, anchor="w").pack(side="left")
 
-def nueva_venta(parent):
+def nueva_venta(callback):
     ventana = ctk.CTkToplevel()
     ventana.title("Nueva Venta")
     ventana.geometry("500x550")
@@ -89,7 +97,7 @@ def nueva_venta(parent):
 
     entrada_cantidad.bind("<KeyRelease>", calcular_total)
 
-    def guardar():
+    def guardar(event=None):
         idx = nombres.index(seleccion.get())
         producto = productos[idx]
         cantidad = int(entrada_cantidad.get() or 0)
@@ -109,6 +117,8 @@ def nueva_venta(parent):
         conn.commit()
         conn.close()
         ventana.destroy()
+        callback()
 
+    ventana.bind("<Return>", guardar)
     ctk.CTkButton(ventana, text="Registrar Venta", fg_color="#E8751A",
                   hover_color="#c45e0e", command=guardar).pack(pady=15)
