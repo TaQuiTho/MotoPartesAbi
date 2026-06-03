@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from modules.inventario import mostrar_inventario
+from modules.ventas import mostrar_ventas
 from database.db import crear_tablas
 
 def mostrar_panel(frame):
@@ -42,6 +43,9 @@ def panel_principal():
 def inventario():
     mostrar_inventario(main_frame)
 
+def ventas():
+    mostrar_ventas(main_frame)
+
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -61,7 +65,7 @@ ctk.CTkLabel(sidebar, text="Moto Partes Abi",
 botones = [
     ("⬛  Panel", panel_principal),
     ("📦  Inventario", inventario),
-    ("🛒  Ventas", None),
+    ("🛒  Ventas", ventas),
     ("🕐  Apartados", None),
     ("👥  Clientes", None),
     ("🚚  Proveedores", None),

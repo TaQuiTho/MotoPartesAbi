@@ -25,5 +25,26 @@ def crear_tablas():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS ventas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fecha TEXT NOT NULL,
+            total REAL DEFAULT 0,
+            notas TEXT
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS venta_detalle (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            venta_id INTEGER,
+            producto_id INTEGER,
+            cantidad INTEGER,
+            precio REAL,
+            FOREIGN KEY (venta_id) REFERENCES ventas(id),
+            FOREIGN KEY (producto_id) REFERENCES productos(id)
+        )
+    """)
+
     conn.commit()
     conn.close()

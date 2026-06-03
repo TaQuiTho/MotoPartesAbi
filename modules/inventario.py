@@ -23,7 +23,26 @@ def agregar_producto(callback):
         entrada.pack(pady=(2,10))
         entradas[campo] = entrada
 
-    def guardar():
+    def guardar(event=None):
+        campos_requeridos = {
+            "Nombre": entradas["Nombre"].get(),
+            "Cantidad": entradas["Cantidad"].get(),
+            "Precio Menudeo": entradas["Precio Menudeo"].get(),
+        }
+
+        for campo, valor in campos_requeridos.items():
+            if not valor.strip():
+                error = ctk.CTkToplevel()
+                error.title("Campo requerido")
+                error.geometry("300x150")
+                error.grab_set()
+                ctk.CTkLabel(error, text=f"Falta llenar: {campo}",
+                             text_color="#E8751A",
+                             font=ctk.CTkFont(size=14)).pack(pady=30)
+                ctk.CTkButton(error, text="OK", fg_color="#E8751A",
+                              command=error.destroy).pack()
+                return
+
         conn = conectar()
         cursor = conn.cursor()
         cursor.execute("""
@@ -45,6 +64,7 @@ def agregar_producto(callback):
         ventana.destroy()
         callback()
 
+    ventana.bind("<Return>", guardar)
     ctk.CTkButton(ventana, text="Guardar", fg_color="#E8751A",
                   hover_color="#c45e0e", command=guardar).pack(pady=15)
 
@@ -78,7 +98,26 @@ def editar_producto(producto_id, callback):
         entrada.pack(pady=(2,10))
         entradas[campo] = entrada
 
-    def guardar():
+    def guardar(event=None):
+        campos_requeridos = {
+            "Nombre": entradas["Nombre"].get(),
+            "Cantidad": entradas["Cantidad"].get(),
+            "Precio Menudeo": entradas["Precio Menudeo"].get(),
+        }
+
+        for campo, valor in campos_requeridos.items():
+            if not valor.strip():
+                error = ctk.CTkToplevel()
+                error.title("Campo requerido")
+                error.geometry("300x150")
+                error.grab_set()
+                ctk.CTkLabel(error, text=f"Falta llenar: {campo}",
+                             text_color="#E8751A",
+                             font=ctk.CTkFont(size=14)).pack(pady=30)
+                ctk.CTkButton(error, text="OK", fg_color="#E8751A",
+                              command=error.destroy).pack()
+                return
+
         conn = conectar()
         cursor = conn.cursor()
         cursor.execute("""
@@ -101,16 +140,21 @@ def editar_producto(producto_id, callback):
         ventana.destroy()
         callback()
 
+    ventana.bind("<Return>", guardar)
     ctk.CTkButton(ventana, text="Guardar Cambios", fg_color="#E8751A",
                   hover_color="#c45e0e", command=guardar).pack(pady=15)
+
+def borrar_producto(producto_id, callback):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM productos WHERE id=?", (producto_id,))
+    conn.commit()
+    conn.close()
+    callback()
 
 def mostrar_inventario(frame):
     content = ctk.CTkFrame(frame, fg_color="#0f0f0f")
     content.pack(fill="both", expand=True, padx=20, pady=20)
-
-    ctk.CTkLabel(content, text="Inventario",
-                 font=ctk.CTkFont(size=18, weight="bold"),
-                 text_color="#FFFFFF").pack(anchor="w", pady=(0,10))
 
     def recargar():
         for widget in content.winfo_children():
@@ -169,11 +213,3 @@ def mostrar_tabla(content, recargar):
                           fg_color="#7a1a1a", hover_color="#a02020",
                           command=lambda pid=p[0]: borrar_producto(pid, recargar)
                           ).pack(side="right", padx=4, pady=4)
-
-def borrar_producto(producto_id, callback):
-    conn = conectar()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM productos WHERE id=?", (producto_id,))
-    conn.commit()
-    conn.close()
-    callback()
