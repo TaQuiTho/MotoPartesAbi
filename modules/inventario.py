@@ -4,13 +4,13 @@ from database.db import conectar
 def agregar_producto(callback):
     ventana = ctk.CTkToplevel()
     ventana.title("Agregar Producto")
-    ventana.geometry("420x550")
+    ventana.geometry("420x700")
     ventana.grab_set()
 
     ctk.CTkLabel(ventana, text="Agregar Producto",
                  font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
 
-    scroll = ctk.CTkScrollableFrame(ventana, fg_color="transparent")
+    scroll = ctk.CTkFrame(ventana, fg_color="transparent")
     scroll.pack(fill="both", expand=True, padx=20)
 
     campos = ["Nombre", "Marca", "SKU", "Cantidad", "Precio Costo",
@@ -24,7 +24,13 @@ def agregar_producto(callback):
         entradas[campo] = entrada
 
         def al_enfocar(event, e=entrada):
-            scroll._parent_canvas.after(50, lambda: scroll._parent_canvas.yview_moveto(
+            def animar(target, current_step=0, steps=10):
+                if current_step <= steps:
+                    current = scroll._parent_canvas.yview()[0]
+                    new_pos = current + (target - current) / (steps - current_step + 1)
+                    scroll._parent_canvas.yview_moveto(new_pos)
+                    scroll._parent_canvas.after(16, lambda: animar(target, current_step + 1, steps))
+            scroll._parent_canvas.after(50, lambda: animar(
                 e.winfo_y() / max(scroll.winfo_height(), 1)
             ))
         entrada.bind("<FocusIn>", al_enfocar)
@@ -83,13 +89,13 @@ def editar_producto(producto_id, callback):
 
     ventana = ctk.CTkToplevel()
     ventana.title("Editar Producto")
-    ventana.geometry("420x550")
+    ventana.geometry("420x700")
     ventana.grab_set()
 
     ctk.CTkLabel(ventana, text="Editar Producto",
                  font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
 
-    scroll = ctk.CTkScrollableFrame(ventana, fg_color="transparent")
+    scroll = ctk.CTkFrame(ventana, fg_color="transparent")
     scroll.pack(fill="both", expand=True, padx=20)
 
     campos = ["Nombre", "Marca", "SKU", "Cantidad", "Precio Costo",
@@ -105,7 +111,13 @@ def editar_producto(producto_id, callback):
         entradas[campo] = entrada
 
         def al_enfocar(event, e=entrada):
-            scroll._parent_canvas.after(50, lambda: scroll._parent_canvas.yview_moveto(
+            def animar(target, current_step=0, steps=10):
+                if current_step <= steps:
+                    current = scroll._parent_canvas.yview()[0]
+                    new_pos = current + (target - current) / (steps - current_step + 1)
+                    scroll._parent_canvas.yview_moveto(new_pos)
+                    scroll._parent_canvas.after(16, lambda: animar(target, current_step + 1, steps))
+            scroll._parent_canvas.after(50, lambda: animar(
                 e.winfo_y() / max(scroll.winfo_height(), 1)
             ))
         entrada.bind("<FocusIn>", al_enfocar)
