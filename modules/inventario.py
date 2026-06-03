@@ -23,6 +23,12 @@ def agregar_producto(callback):
         entrada.pack(pady=(2,10))
         entradas[campo] = entrada
 
+        def al_enfocar(event, e=entrada):
+            scroll._parent_canvas.after(50, lambda: scroll._parent_canvas.yview_moveto(
+                e.winfo_y() / max(scroll.winfo_height(), 1)
+            ))
+        entrada.bind("<FocusIn>", al_enfocar)
+
     def guardar(event=None):
         campos_requeridos = {
             "Nombre": entradas["Nombre"].get(),
@@ -97,6 +103,12 @@ def editar_producto(producto_id, callback):
         entrada.insert(0, str(valor) if valor else "")
         entrada.pack(pady=(2,10))
         entradas[campo] = entrada
+
+        def al_enfocar(event, e=entrada):
+            scroll._parent_canvas.after(50, lambda: scroll._parent_canvas.yview_moveto(
+                e.winfo_y() / max(scroll.winfo_height(), 1)
+            ))
+        entrada.bind("<FocusIn>", al_enfocar)
 
     def guardar(event=None):
         campos_requeridos = {
