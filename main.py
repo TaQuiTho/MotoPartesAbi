@@ -42,4 +42,25 @@ sucursal = ctk.CTkLabel(topbar, text="📍 Sucursal Matriz",
                         text_color="#E8751A")
 sucursal.pack(side="right", padx=20)
 
+content = ctk.CTkFrame(main_frame, fg_color="#0f0f0f")
+content.pack(fill="both", expand=True, padx=20, pady=20)
+
+stats = [
+    ("Total Ventas Hoy", "$0.00"),
+    ("Productos en Stock", "0"),
+    ("Apartados Pendientes", "0"),
+    ("Clientes Atendidos", "0"),
+]
+
+stats_frame = ctk.CTkFrame(content, fg_color="transparent")
+stats_frame.pack(fill="x", pady=10)
+
+for titulo, valor in stats:
+    card = ctk.CTkFrame(stats_frame, fg_color="#1a1a1a", corner_radius=10)
+    card.pack(side="left", expand=True, fill="x", padx=8)
+    ctk.CTkLabel(card, text=titulo, text_color="#888888",
+                 font=ctk.CTkFont(size=11)).pack(pady=(12,2))
+    ctk.CTkLabel(card, text=valor, text_color="#E8751A",
+                 font=ctk.CTkFont(size=22, weight="bold")).pack(pady=(2,12))
+
 app.mainloop()
