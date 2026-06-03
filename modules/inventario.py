@@ -4,20 +4,23 @@ from database.db import conectar
 def agregar_producto(callback):
     ventana = ctk.CTkToplevel()
     ventana.title("Agregar Producto")
-    ventana.geometry("400x450")
+    ventana.geometry("420x550")
     ventana.grab_set()
 
     ctk.CTkLabel(ventana, text="Agregar Producto",
                  font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
 
+    scroll = ctk.CTkScrollableFrame(ventana, fg_color="transparent")
+    scroll.pack(fill="both", expand=True, padx=20)
+
     campos = ["Nombre", "Marca", "SKU", "Cantidad", "Precio Costo",
-              "Precio Menudeo", "Precio Mayoreo"]
+              "Precio Menudeo", "Precio Mayoreo", "Descripción"]
     entradas = {}
 
     for campo in campos:
-        ctk.CTkLabel(ventana, text=campo, text_color="#AAAAAA").pack(anchor="w", padx=30)
-        entrada = ctk.CTkEntry(ventana, width=340)
-        entrada.pack(pady=(2,8))
+        ctk.CTkLabel(scroll, text=campo, text_color="#AAAAAA").pack(anchor="w")
+        entrada = ctk.CTkEntry(scroll, width=360)
+        entrada.pack(pady=(2,10))
         entradas[campo] = entrada
 
     def guardar():
@@ -25,8 +28,8 @@ def agregar_producto(callback):
         cursor = conn.cursor()
         cursor.execute("""
             INSERT INTO productos (nombre, marca, sku, cantidad, precio_costo,
-                                   precio_menudeo, precio_mayoreo)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+                                   precio_menudeo, precio_mayoreo, descripcion)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             entradas["Nombre"].get(),
             entradas["Marca"].get(),
@@ -35,6 +38,7 @@ def agregar_producto(callback):
             float(entradas["Precio Costo"].get() or 0),
             float(entradas["Precio Menudeo"].get() or 0),
             float(entradas["Precio Mayoreo"].get() or 0),
+            entradas["Descripción"].get(),
         ))
         conn.commit()
         conn.close()
@@ -42,6 +46,62 @@ def agregar_producto(callback):
         callback()
 
     ctk.CTkButton(ventana, text="Guardar", fg_color="#E8751A",
+                  hover_color="#c45e0e", command=guardar).pack(pady=15)
+
+def editar_producto(producto_id, callback):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM productos WHERE id=?", (producto_id,))
+    p = cursor.fetchone()
+    conn.close()
+
+    ventana = ctk.CTkToplevel()
+    ventana.title("Editar Producto")
+    ventana.geometry("420x550")
+    ventana.grab_set()
+
+    ctk.CTkLabel(ventana, text="Editar Producto",
+                 font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
+
+    scroll = ctk.CTkScrollableFrame(ventana, fg_color="transparent")
+    scroll.pack(fill="both", expand=True, padx=20)
+
+    campos = ["Nombre", "Marca", "SKU", "Cantidad", "Precio Costo",
+              "Precio Menudeo", "Precio Mayoreo", "Descripción"]
+    valores = [p[1], p[2], p[3], p[4], p[5], p[6], p[7], p[8] if len(p) > 8 else ""]
+    entradas = {}
+
+    for campo, valor in zip(campos, valores):
+        ctk.CTkLabel(scroll, text=campo, text_color="#AAAAAA").pack(anchor="w")
+        entrada = ctk.CTkEntry(scroll, width=360)
+        entrada.insert(0, str(valor) if valor else "")
+        entrada.pack(pady=(2,10))
+        entradas[campo] = entrada
+
+    def guardar():
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE productos SET nombre=?, marca=?, sku=?, cantidad=?,
+            precio_costo=?, precio_menudeo=?, precio_mayoreo=?, descripcion=?
+            WHERE id=?
+        """, (
+            entradas["Nombre"].get(),
+            entradas["Marca"].get(),
+            entradas["SKU"].get(),
+            int(entradas["Cantidad"].get() or 0),
+            float(entradas["Precio Costo"].get() or 0),
+            float(entradas["Precio Menudeo"].get() or 0),
+            float(entradas["Precio Mayoreo"].get() or 0),
+            entradas["Descripción"].get(),
+            producto_id,
+        ))
+        conn.commit()
+        conn.close()
+        ventana.destroy()
+        callback()
+
+    ctk.CTkButton(ventana, text="Guardar Cambios", fg_color="#E8751A",
                   hover_color="#c45e0e", command=guardar).pack(pady=15)
 
 def mostrar_inventario(frame):
@@ -55,24 +115,30 @@ def mostrar_inventario(frame):
     def recargar():
         for widget in content.winfo_children():
             widget.destroy()
-        mostrar_tabla(content)
+        construir(content)
 
-    btn_agregar = ctk.CTkButton(content, text="+ Agregar Producto",
-                                fg_color="#E8751A", hover_color="#c45e0e",
-                                text_color="#FFFFFF",
-                                command=lambda: agregar_producto(recargar))
-    btn_agregar.pack(anchor="w", pady=(0,15))
+    def construir(c):
+        ctk.CTkLabel(c, text="Inventario",
+                     font=ctk.CTkFont(size=18, weight="bold"),
+                     text_color="#FFFFFF").pack(anchor="w", pady=(0,10))
 
-    mostrar_tabla(content)
+        ctk.CTkButton(c, text="+ Agregar Producto",
+                      fg_color="#E8751A", hover_color="#c45e0e",
+                      text_color="#FFFFFF",
+                      command=lambda: agregar_producto(recargar)).pack(anchor="w", pady=(0,15))
 
-def mostrar_tabla(content):
+        mostrar_tabla(c, recargar)
+
+    construir(content)
+
+def mostrar_tabla(content, recargar):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("SELECT nombre, marca, sku, cantidad, precio_menudeo FROM productos")
+    cursor.execute("SELECT id, nombre, marca, sku, cantidad, precio_menudeo FROM productos")
     productos = cursor.fetchall()
     conn.close()
 
-    tabla = ctk.CTkFrame(content, fg_color="#1a1a1a", corner_radius=10)
+    tabla = ctk.CTkScrollableFrame(content, fg_color="#1a1a1a", corner_radius=10)
     tabla.pack(fill="both", expand=True)
 
     if not productos:
@@ -80,15 +146,34 @@ def mostrar_tabla(content):
                      text_color="#555555").pack(pady=40)
     else:
         for p in productos:
-            fila = ctk.CTkFrame(tabla, fg_color="transparent")
-            fila.pack(fill="x", padx=10, pady=4)
-            ctk.CTkLabel(fila, text=p[0], text_color="#FFFFFF", width=200,
-                         anchor="w").pack(side="left")
-            ctk.CTkLabel(fila, text=p[1] or "", text_color="#888888",
-                         width=120, anchor="w").pack(side="left")
+            fila = ctk.CTkFrame(tabla, fg_color="#222222", corner_radius=6)
+            fila.pack(fill="x", padx=8, pady=3)
+
+            ctk.CTkLabel(fila, text=p[1], text_color="#FFFFFF",
+                         width=180, anchor="w").pack(side="left", padx=6)
             ctk.CTkLabel(fila, text=p[2] or "", text_color="#888888",
                          width=100, anchor="w").pack(side="left")
-            ctk.CTkLabel(fila, text=str(p[3]), text_color="#E8751A",
-                         width=60, anchor="w").pack(side="left")
-            ctk.CTkLabel(fila, text=f"${p[4]:.2f}", text_color="#AAAAAA",
+            ctk.CTkLabel(fila, text=p[3] or "", text_color="#888888",
+                         width=90, anchor="w").pack(side="left")
+            ctk.CTkLabel(fila, text=str(p[4]), text_color="#E8751A",
+                         width=50, anchor="w").pack(side="left")
+            ctk.CTkLabel(fila, text=f"${p[5]:.2f}", text_color="#AAAAAA",
                          width=80, anchor="w").pack(side="left")
+
+            ctk.CTkButton(fila, text="Editar", width=60, height=26,
+                          fg_color="#333333", hover_color="#444444",
+                          command=lambda pid=p[0]: editar_producto(pid, recargar)
+                          ).pack(side="right", padx=4, pady=4)
+
+            ctk.CTkButton(fila, text="Borrar", width=60, height=26,
+                          fg_color="#7a1a1a", hover_color="#a02020",
+                          command=lambda pid=p[0]: borrar_producto(pid, recargar)
+                          ).pack(side="right", padx=4, pady=4)
+
+def borrar_producto(producto_id, callback):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM productos WHERE id=?", (producto_id,))
+    conn.commit()
+    conn.close()
+    callback()

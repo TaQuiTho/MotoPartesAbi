@@ -20,7 +20,8 @@ def crear_tablas():
             precio_costo REAL DEFAULT 0,
             precio_menudeo REAL DEFAULT 0,
             precio_mayoreo REAL DEFAULT 0,
-            stock_minimo INTEGER DEFAULT 5
+            stock_minimo INTEGER DEFAULT 5,
+            descripcion TEXT
         )
     """)
 
