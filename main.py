@@ -7,13 +7,39 @@ app = ctk.CTk()
 app.title("Moto Partes Abi")
 app.geometry("1200x700")
 
-sidebar = ctk.CTkFrame(app, width=200, fg_color="#1C1C1E")
+sidebar = ctk.CTkFrame(app, width=200, fg_color="#111111")
 sidebar.pack(side="left", fill="y")
+sidebar.pack_propagate(False)
 
-logo_label = ctk.CTkLabel(sidebar, text="Moto Partes Abi", font=ctk.CTkFont(size=14, weight="bold"), text_color="#FFFFFF")
+logo_label = ctk.CTkLabel(sidebar, text="Moto Partes Abi",
+                           font=ctk.CTkFont(size=14, weight="bold"),
+                           text_color="#FFFFFF")
 logo_label.pack(pady=20, padx=10)
 
-main_frame = ctk.CTkFrame(app, fg_color="#1a1a2e")
+botones = ["⬛  Panel", "📦  Inventario", "🛒  Ventas", "🕐  Apartados",
+           "👥  Clientes", "🚚  Proveedores", "🏪  Sucursales",
+           "📊  Reportes", "⚙️  Configuración"]
+
+for boton in botones:
+    btn = ctk.CTkButton(sidebar, text=boton, fg_color="transparent",
+                        text_color="#AAAAAA", hover_color="#222222",
+                        anchor="w", height=36)
+    btn.pack(fill="x", padx=8, pady=2)
+
+main_frame = ctk.CTkFrame(app, fg_color="#0f0f0f")
 main_frame.pack(side="left", fill="both", expand=True)
+
+topbar = ctk.CTkFrame(main_frame, height=50, fg_color="#1a1a1a")
+topbar.pack(fill="x", side="top")
+topbar.pack_propagate(False)
+
+titulo = ctk.CTkLabel(topbar, text="Panel Principal",
+                      font=ctk.CTkFont(size=16, weight="bold"),
+                      text_color="#FFFFFF")
+titulo.pack(side="left", padx=20, pady=10)
+
+sucursal = ctk.CTkLabel(topbar, text="📍 Sucursal Matriz",
+                        text_color="#E8751A")
+sucursal.pack(side="right", padx=20)
 
 app.mainloop()
