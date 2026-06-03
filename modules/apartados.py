@@ -25,6 +25,65 @@ def mostrar_apartados(frame):
 
     construir(content)
 
+def editar_apartado(apartado_id, callback):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM apartados WHERE id=?", (apartado_id,))
+    a = cursor.fetchone()
+    cursor.execute("SELECT id, nombre FROM productos")
+    productos = cursor.fetchall()
+    conn.close()
+
+    ventana = ctk.CTkToplevel()
+    ventana.title("Editar Apartado")
+    ventana.geometry("420x500")
+    ventana.grab_set()
+
+    ctk.CTkLabel(ventana, text="Editar Apartado",
+                 font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
+
+    ctk.CTkLabel(ventana, text="Producto", text_color="#AAAAAA").pack(anchor="w", padx=30)
+    nombres = [p[1] for p in productos]
+    producto_actual = next((p[1] for p in productos if p[0] == a[2]), nombres[0] if nombres else "")
+    seleccion = ctk.StringVar(value=producto_actual)
+    ctk.CTkOptionMenu(ventana, values=nombres, variable=seleccion,
+                      width=360).pack(padx=30, pady=(2,10))
+
+    campos = ["Cliente", "Cantidad", "Fecha de entrega", "Notas"]
+    valores = [a[1], a[3], a[5], a[6]]
+    entradas = {}
+
+    for campo, valor in zip(campos, valores):
+        ctk.CTkLabel(ventana, text=campo, text_color="#AAAAAA").pack(anchor="w", padx=30)
+        entrada = ctk.CTkEntry(ventana, width=360)
+        entrada.insert(0, str(valor) if valor else "")
+        entrada.pack(padx=30, pady=(2,10))
+        entradas[campo] = entrada
+
+    def guardar(event=None):
+        producto_id = next((p[0] for p in productos if p[1] == seleccion.get()), None)
+        conn = conectar()
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE apartados SET cliente=?, producto_id=?, cantidad=?, fecha_entrega=?, notas=?
+            WHERE id=?
+        """, (
+            entradas["Cliente"].get(),
+            producto_id,
+            int(entradas["Cantidad"].get() or 1),
+            entradas["Fecha de entrega"].get(),
+            entradas["Notas"].get(),
+            apartado_id,
+        ))
+        conn.commit()
+        conn.close()
+        ventana.destroy()
+        callback()
+
+    ventana.bind("<Return>", guardar)
+    ctk.CTkButton(ventana, text="Guardar Cambios", fg_color="#E8751A",
+                  hover_color="#c45e0e", command=guardar).pack(pady=15)
+
 def mostrar_tabla(content, recargar):
     conn = conectar()
     cursor = conn.cursor()
@@ -64,6 +123,11 @@ def mostrar_tabla(content, recargar):
             ctk.CTkButton(fila, text="Entregar", width=70, height=26,
                           fg_color="#1a3a1a", hover_color="#2a5a2a",
                           command=lambda aid=a[0]: entregar(aid, recargar)
+                          ).pack(side="right", padx=4, pady=4)
+
+            ctk.CTkButton(fila, text="Editar", width=60, height=26,
+                          fg_color="#333333", hover_color="#444444",
+                          command=lambda aid=a[0]: editar_apartado(aid, recargar)
                           ).pack(side="right", padx=4, pady=4)
 
             ctk.CTkButton(fila, text="Borrar", width=60, height=26,
@@ -152,4 +216,3 @@ def borrar(apartado_id, callback):
     conn.commit()
     conn.close()
     callback()
-    
