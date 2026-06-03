@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from modules.inventario import mostrar_inventario
+from modules.apartados import mostrar_apartados
 from modules.ventas import mostrar_ventas
 from database.db import crear_tablas
 
@@ -47,6 +48,8 @@ def ventas():
     mostrar_ventas(main_frame)
 
 ctk.set_appearance_mode("dark")
+def apartados():
+    mostrar_apartados(main_frame)
 ctk.set_default_color_theme("blue")
 
 app = ctk.CTk()
@@ -66,7 +69,7 @@ botones = [
     ("⬛  Panel", panel_principal),
     ("📦  Inventario", inventario),
     ("🛒  Ventas", ventas),
-    ("🕐  Apartados", None),
+    ("🕐  Apartados", apartados),
     ("👥  Clientes", None),
     ("🚚  Proveedores", None),
     ("🏪  Sucursales", None),

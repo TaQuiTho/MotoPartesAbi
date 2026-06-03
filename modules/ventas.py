@@ -1,34 +1,63 @@
 import customtkinter as ctk
 from database.db import conectar
-from datetime import datetime
+from datetime import datetime, timedelta
+import openpyxl
+import os
 
 def mostrar_ventas(frame):
     content = ctk.CTkFrame(frame, fg_color="#0f0f0f")
     content.pack(fill="both", expand=True, padx=20, pady=20)
 
-    def recargar():
+    def recargar(filtro="hoy"):
         for widget in content.winfo_children():
             widget.destroy()
-        construir(content)
+        construir(content, filtro)
 
-    def construir(c):
+    def construir(c, filtro="hoy"):
         ctk.CTkLabel(c, text="Ventas",
                      font=ctk.CTkFont(size=18, weight="bold"),
                      text_color="#FFFFFF").pack(anchor="w", pady=(0,10))
 
+        btn_frame = ctk.CTkFrame(c, fg_color="transparent")
+        btn_frame.pack(anchor="w", pady=(0,10))
+
+        for texto, key in [("Hoy", "hoy"), ("Semana", "semana"), ("Mes", "mes"), ("Todas", "todas")]:
+            color = "#E8751A" if filtro == key else "#333333"
+            ctk.CTkButton(btn_frame, text=texto, width=70, height=28,
+                          fg_color=color, hover_color="#c45e0e",
+                          command=lambda k=key: recargar(k)).pack(side="left", padx=4)
+
         ctk.CTkButton(c, text="+ Nueva Venta",
                       fg_color="#E8751A", hover_color="#c45e0e",
                       text_color="#FFFFFF",
-                      command=lambda: nueva_venta(recargar)).pack(anchor="w", pady=(0,15))
+                      command=lambda: nueva_venta(lambda: recargar(filtro))).pack(anchor="w", pady=(0,10))
 
-        mostrar_historial(c)
+        ctk.CTkButton(c, text="⬇ Exportar Excel",
+                      fg_color="#1a3a1a", hover_color="#2a5a2a",
+                      text_color="#FFFFFF",
+                      command=lambda: exportar_excel(filtro)).pack(anchor="w", pady=(0,15))
+
+        mostrar_historial(c, filtro)
 
     construir(content)
 
-def mostrar_historial(content):
+def mostrar_historial(content, filtro="hoy"):
     conn = conectar()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, fecha, total FROM ventas ORDER BY id DESC")
+
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    semana = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    mes = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    if filtro == "hoy":
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas WHERE fecha LIKE ? ORDER BY id DESC", (f"{hoy}%",))
+    elif filtro == "semana":
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas WHERE fecha >= ? ORDER BY id DESC", (semana,))
+    elif filtro == "mes":
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas WHERE fecha >= ? ORDER BY id DESC", (mes,))
+    else:
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas ORDER BY id DESC")
+
     ventas = cursor.fetchall()
     conn.close()
 
@@ -48,6 +77,50 @@ def mostrar_historial(content):
                          width=180, anchor="w").pack(side="left")
             ctk.CTkLabel(fila, text=f"${v[2]:.2f}", text_color="#E8751A",
                          width=100, anchor="w").pack(side="left")
+            ctk.CTkLabel(fila, text=v[3] or "", text_color="#555555",
+                         width=150, anchor="w").pack(side="left")
+
+def exportar_excel(filtro="todas"):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    hoy = datetime.now().strftime("%Y-%m-%d")
+    semana = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+    mes = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+
+    if filtro == "hoy":
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas WHERE fecha LIKE ?", (f"{hoy}%",))
+    elif filtro == "semana":
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas WHERE fecha >= ?", (semana,))
+    elif filtro == "mes":
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas WHERE fecha >= ?", (mes,))
+    else:
+        cursor.execute("SELECT id, fecha, total, notas FROM ventas ORDER BY id DESC")
+
+    ventas = cursor.fetchall()
+    conn.close()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Ventas"
+    ws.append(["#", "Fecha", "Total", "Notas"])
+
+    for v in ventas:
+        ws.append([v[0], v[1], v[2], v[3] or ""])
+
+    nombre = f"ventas_{filtro}_{hoy}.xlsx"
+    ruta = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "exports", nombre)
+    os.makedirs(os.path.dirname(ruta), exist_ok=True)
+    wb.save(ruta)
+
+    exito = ctk.CTkToplevel()
+    exito.title("Exportado")
+    exito.geometry("350x150")
+    exito.grab_set()
+    ctk.CTkLabel(exito, text=f"Archivo guardado en:\n{ruta}",
+                 text_color="#FFFFFF", wraplength=300).pack(pady=30)
+    ctk.CTkButton(exito, text="OK", fg_color="#E8751A",
+                  command=exito.destroy).pack()
 
 def nueva_venta(callback):
     ventana = ctk.CTkToplevel()

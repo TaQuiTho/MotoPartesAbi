@@ -9,6 +9,19 @@ def conectar():
 def crear_tablas():
     conn = conectar()
     cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS apartados (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente TEXT NOT NULL,
+        producto_id INTEGER,
+        cantidad INTEGER DEFAULT 1,
+        fecha TEXT NOT NULL,
+        fecha_entrega TEXT,
+        notas TEXT,
+        estado TEXT DEFAULT 'pendiente',
+        FOREIGN KEY (producto_id) REFERENCES productos(id)
+    )
+""")
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS productos (
