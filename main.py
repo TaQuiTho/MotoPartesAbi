@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from modules.inventario import mostrar_inventario
 from database.db import crear_tablas
 
 def mostrar_panel(frame):
@@ -39,10 +40,7 @@ def panel_principal():
                  text_color="#555555").pack(pady=20)
 
 def inventario():
-    content = ctk.CTkFrame(main_frame, fg_color="#0f0f0f")
-    content.pack(fill="both", expand=True, padx=20, pady=20)
-    ctk.CTkLabel(content, text="Módulo de Inventario — en construcción",
-                 text_color="#555555").pack(pady=40)
+    mostrar_inventario(main_frame)
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
