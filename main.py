@@ -6,6 +6,7 @@ from modules.clientes import mostrar_clientes
 from modules.ventas import mostrar_ventas
 from database.db import crear_tablas
 from modules.sucursales import mostrar_sucursales
+from modules.reportes import mostrar_reportes
 
 def mostrar_panel(frame):
     for widget in main_frame.winfo_children():
@@ -46,13 +47,13 @@ def panel_principal():
 
 def inventario():
     mostrar_inventario(main_frame)
-
 def sucursales():
     mostrar_sucursales(main_frame)
-
 def ventas():
     mostrar_ventas(main_frame)
-
+def reportes():
+    mostrar_reportes(main_frame)
+    
 ctk.set_appearance_mode("dark")
 def proveedores():
     mostrar_proveedores(main_frame)
@@ -83,7 +84,7 @@ botones = [
     ("👥  Clientes", clientes),
     ("🚚  Proveedores", proveedores),
     ("🏪  Sucursales", sucursales),
-    ("📊  Reportes", None),
+    ("📊  Reportes", reportes),
     ("⚙️  Configuración", None),
 ]
 
