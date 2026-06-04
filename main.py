@@ -5,6 +5,7 @@ from modules.proveedores import mostrar_proveedores
 from modules.clientes import mostrar_clientes
 from modules.ventas import mostrar_ventas
 from database.db import crear_tablas
+from modules.sucursales import mostrar_sucursales
 
 def mostrar_panel(frame):
     for widget in main_frame.winfo_children():
@@ -46,6 +47,9 @@ def panel_principal():
 def inventario():
     mostrar_inventario(main_frame)
 
+def sucursales():
+    mostrar_sucursales(main_frame)
+
 def ventas():
     mostrar_ventas(main_frame)
 
@@ -78,7 +82,7 @@ botones = [
     ("🕐  Apartados", apartados),
     ("👥  Clientes", clientes),
     ("🚚  Proveedores", proveedores),
-    ("🏪  Sucursales", None),
+    ("🏪  Sucursales", sucursales),
     ("📊  Reportes", None),
     ("⚙️  Configuración", None),
 ]

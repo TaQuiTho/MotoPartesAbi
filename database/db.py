@@ -24,6 +24,17 @@ def crear_tablas():
 """)
 
     cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sucursales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        direccion TEXT,
+        telefono TEXT,
+        gerente TEXT,
+        activa INTEGER DEFAULT 1
+    )
+""")
+
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS proveedores (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre TEXT NOT NULL,
