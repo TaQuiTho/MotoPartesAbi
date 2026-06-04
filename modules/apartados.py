@@ -25,6 +25,47 @@ def mostrar_apartados(frame):
 
     construir(content)
 
+def campo_autocomplete(ventana, label_text, clientes):
+    ctk.CTkLabel(ventana, text=label_text, text_color="#AAAAAA").pack(anchor="w", padx=30)
+
+    contenedor = ctk.CTkFrame(ventana, fg_color="transparent")
+    contenedor.pack(padx=30, pady=(2,8), fill="x")
+
+    entrada = ctk.CTkEntry(contenedor, width=360)
+    entrada.pack()
+
+    sugerencias_frame = ctk.CTkFrame(contenedor, fg_color="#2a2a2a", corner_radius=6)
+
+    def actualizar_sugerencias(event=None):
+        texto = entrada.get().strip().lower()
+        for w in sugerencias_frame.winfo_children():
+            w.destroy()
+
+        if not texto:
+            sugerencias_frame.pack_forget()
+            return
+
+        coincidencias = [c for c in clientes if texto in c.lower()][:5]
+
+        if coincidencias:
+            sugerencias_frame.pack(fill="x", pady=(2,0))
+            for nombre in coincidencias:
+                def seleccionar(n=nombre):
+                    entrada.delete(0, "end")
+                    entrada.insert(0, n)
+                    sugerencias_frame.pack_forget()
+
+                btn = ctk.CTkButton(sugerencias_frame, text=nombre,
+                                    fg_color="transparent", hover_color="#3a3a3a",
+                                    text_color="#FFFFFF", anchor="w", height=28,
+                                    command=seleccionar)
+                btn.pack(fill="x", padx=4, pady=1)
+        else:
+            sugerencias_frame.pack_forget()
+
+    entrada.bind("<KeyRelease>", actualizar_sugerencias)
+    return entrada
+
 def editar_apartado(apartado_id, callback):
     conn = conectar()
     cursor = conn.cursor()
@@ -32,11 +73,13 @@ def editar_apartado(apartado_id, callback):
     a = cursor.fetchone()
     cursor.execute("SELECT id, nombre FROM productos")
     productos = cursor.fetchall()
+    cursor.execute("SELECT nombre FROM clientes ORDER BY nombre")
+    clientes = [r[0] for r in cursor.fetchall()]
     conn.close()
 
     ventana = ctk.CTkToplevel()
     ventana.title("Editar Apartado")
-    ventana.geometry("420x500")
+    ventana.geometry("420x560")
     ventana.grab_set()
 
     ctk.CTkLabel(ventana, text="Editar Apartado",
@@ -49,11 +92,14 @@ def editar_apartado(apartado_id, callback):
     ctk.CTkOptionMenu(ventana, values=nombres, variable=seleccion,
                       width=360).pack(padx=30, pady=(2,10))
 
-    campos = ["Cliente", "Cantidad", "Fecha de entrega", "Notas"]
-    valores = [a[1], a[3], a[5], a[6]]
+    entrada_cliente = campo_autocomplete(ventana, "Cliente", clientes)
+    entrada_cliente.insert(0, a[1] or "")
+
+    campos_extra = ["Cantidad", "Fecha de entrega", "Notas"]
+    valores_extra = [a[3], a[5], a[6]]
     entradas = {}
 
-    for campo, valor in zip(campos, valores):
+    for campo, valor in zip(campos_extra, valores_extra):
         ctk.CTkLabel(ventana, text=campo, text_color="#AAAAAA").pack(anchor="w", padx=30)
         entrada = ctk.CTkEntry(ventana, width=360)
         entrada.insert(0, str(valor) if valor else "")
@@ -68,7 +114,7 @@ def editar_apartado(apartado_id, callback):
             UPDATE apartados SET cliente=?, producto_id=?, cantidad=?, fecha_entrega=?, notas=?
             WHERE id=?
         """, (
-            entradas["Cliente"].get(),
+            entrada_cliente.get(),
             producto_id,
             int(entradas["Cantidad"].get() or 1),
             entradas["Fecha de entrega"].get(),
@@ -138,7 +184,7 @@ def mostrar_tabla(content, recargar):
 def nuevo_apartado(callback):
     ventana = ctk.CTkToplevel()
     ventana.title("Nuevo Apartado")
-    ventana.geometry("420x500")
+    ventana.geometry("420x580")
     ventana.grab_set()
 
     ctk.CTkLabel(ventana, text="Nuevo Apartado",
@@ -148,16 +194,20 @@ def nuevo_apartado(callback):
     cursor = conn.cursor()
     cursor.execute("SELECT id, nombre FROM productos")
     productos = cursor.fetchall()
+    cursor.execute("SELECT nombre FROM clientes ORDER BY nombre")
+    clientes = [r[0] for r in cursor.fetchall()]
     conn.close()
-
-    campos_labels = ["Cliente", "Cantidad", "Fecha de entrega", "Notas"]
-    entradas = {}
 
     ctk.CTkLabel(ventana, text="Producto", text_color="#AAAAAA").pack(anchor="w", padx=30)
     nombres = [p[1] for p in productos]
     seleccion = ctk.StringVar(value=nombres[0] if nombres else "")
     ctk.CTkOptionMenu(ventana, values=nombres, variable=seleccion,
                       width=360).pack(padx=30, pady=(2,10))
+
+    entrada_cliente = campo_autocomplete(ventana, "Cliente", clientes)
+
+    campos_labels = ["Cantidad", "Fecha de entrega", "Notas"]
+    entradas = {}
 
     for campo in campos_labels:
         ctk.CTkLabel(ventana, text=campo, text_color="#AAAAAA").pack(anchor="w", padx=30)
@@ -166,7 +216,7 @@ def nuevo_apartado(callback):
         entradas[campo] = entrada
 
     def guardar(event=None):
-        if not entradas["Cliente"].get().strip():
+        if not entrada_cliente.get().strip():
             error = ctk.CTkToplevel()
             error.title("Campo requerido")
             error.geometry("300x150")
@@ -185,7 +235,7 @@ def nuevo_apartado(callback):
             INSERT INTO apartados (cliente, producto_id, cantidad, fecha, fecha_entrega, notas)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (
-            entradas["Cliente"].get(),
+            entrada_cliente.get(),
             producto_id,
             int(entradas["Cantidad"].get() or 1),
             datetime.now().strftime("%Y-%m-%d %H:%M"),
