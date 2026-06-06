@@ -7,6 +7,7 @@ from modules.ventas import mostrar_ventas
 from database.db import crear_tablas
 from modules.sucursales import mostrar_sucursales
 from modules.reportes import mostrar_reportes
+from modules.configuracion import mostrar_configuracion
 
 def mostrar_panel(frame):
     for widget in main_frame.winfo_children():
@@ -59,6 +60,8 @@ def proveedores():
     mostrar_proveedores(main_frame)
 def clientes():
     mostrar_clientes(main_frame)
+def configuracion():
+    mostrar_configuracion(main_frame)
 def apartados():
     mostrar_apartados(main_frame)
 ctk.set_default_color_theme("blue")
@@ -85,7 +88,7 @@ botones = [
     ("🚚  Proveedores", proveedores),
     ("🏪  Sucursales", sucursales),
     ("📊  Reportes", reportes),
-    ("⚙️  Configuración", None),
+    ("⚙️  Configuración", configuracion),
 ]
 
 for texto, comando in botones:
