@@ -146,7 +146,7 @@ def mostrar_configuracion(frame, aplicar_tema=None):
         guardar_config(nueva_config)
 
         if aplicar_tema:
-            aplicar_tema(nueva_config["tema"])
+            aplicar_tema(nueva_config["tema"], nueva_config["idioma"])
             return
 
         exito = ctk.CTkToplevel()

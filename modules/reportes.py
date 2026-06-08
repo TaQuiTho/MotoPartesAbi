@@ -103,7 +103,7 @@ def mostrar_reporte_ventas(content):
         fig.patch.set_facecolor("#1a1a1a")
         ax.set_facecolor("#1a1a1a")
 
-        ax.bar(dias, totales, color="#E8751A", alpha=0.85)
+        ax.bar(dias, totales, color="#E8751A", alpha=0.85, width=0.4)
         ax.set_ylabel("Total $", color="#888888", fontsize=9)
         ax.tick_params(colors="#888888", labelsize=8)
         ax.spines['bottom'].set_color("#333333")
