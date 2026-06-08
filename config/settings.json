@@ -3,5 +3,6 @@
     "moneda": "MXN",
     "stock_minimo": 5,
     "idioma": "Espa\u00f1ol",
-    "tema": "dark"
+    "tema": "dark",
+    "ruta_respaldo": ""
 }
