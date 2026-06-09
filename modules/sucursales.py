@@ -1,7 +1,19 @@
 import customtkinter as ctk
 from database.db import conectar
+import os
+
+def get_idioma():
+    try:
+        import json
+        config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "settings.json")
+        with open(config_path) as f:
+            return json.load(f).get("idioma", "Español")
+    except:
+        return "Español"
 
 def mostrar_sucursales(frame):
+    from config.translations import t
+    idioma = get_idioma()
     content = ctk.CTkFrame(frame, fg_color="#0f0f0f")
     content.pack(fill="both", expand=True, padx=20, pady=20)
 
@@ -11,11 +23,13 @@ def mostrar_sucursales(frame):
         construir(content)
 
     def construir(c):
-        ctk.CTkLabel(c, text="Sucursales",
+        from config.translations import t
+        idioma = get_idioma()
+        ctk.CTkLabel(c, text=t("sucursales", idioma),
                      font=ctk.CTkFont(size=18, weight="bold"),
                      text_color="#FFFFFF").pack(anchor="w", pady=(0,10))
 
-        ctk.CTkButton(c, text="+ Nueva Sucursal",
+        ctk.CTkButton(c, text=f"+ {t('nueva_sucursal', idioma)}",
                       fg_color="#E8751A", hover_color="#c45e0e",
                       text_color="#FFFFFF",
                       command=lambda: nueva_sucursal(recargar)).pack(anchor="w", pady=(0,15))
@@ -25,6 +39,8 @@ def mostrar_sucursales(frame):
     construir(content)
 
 def mostrar_tabla(content, recargar):
+    from config.translations import t
+    idioma = get_idioma()
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("SELECT id, nombre, direccion, telefono, gerente, activa FROM sucursales ORDER BY nombre")
@@ -35,7 +51,7 @@ def mostrar_tabla(content, recargar):
     tabla.pack(fill="both", expand=True)
 
     if not sucursales:
-        ctk.CTkLabel(tabla, text="Sin sucursales registradas",
+        ctk.CTkLabel(tabla, text=t("sin_sucursales", idioma),
                      text_color="#555555").pack(pady=40)
     else:
         for s in sucursales:
@@ -50,72 +66,68 @@ def mostrar_tabla(content, recargar):
                          width=130, anchor="w").pack(side="left")
 
             color = "#3B6D11" if s[5] else "#A32D2D"
-            estado = "Activa" if s[5] else "Inactiva"
+            estado = t("activa", idioma) if s[5] else t("inactiva", idioma)
             ctk.CTkLabel(fila, text=estado, text_color=color,
                          width=70, anchor="w").pack(side="left")
 
-            ctk.CTkButton(fila, text="Editar", width=60, height=26,
+            ctk.CTkButton(fila, text=t("editar", idioma), width=60, height=26,
                           fg_color="#333333", hover_color="#444444",
                           command=lambda sid=s[0]: editar_sucursal(sid, recargar)
                           ).pack(side="right", padx=4, pady=4)
 
-            ctk.CTkButton(fila, text="Borrar", width=60, height=26,
+            ctk.CTkButton(fila, text=t("borrar", idioma), width=60, height=26,
                           fg_color="#7a1a1a", hover_color="#a02020",
                           command=lambda sid=s[0]: borrar_sucursal(sid, recargar)
                           ).pack(side="right", padx=4, pady=4)
 
 def nueva_sucursal(callback):
+    from config.translations import t
+    idioma = get_idioma()
     ventana = ctk.CTkToplevel()
-    ventana.title("Nueva Sucursal")
+    ventana.title(t("nueva_sucursal", idioma))
     ventana.geometry("420x450")
     ventana.grab_set()
 
-    ctk.CTkLabel(ventana, text="Nueva Sucursal",
+    ctk.CTkLabel(ventana, text=t("nueva_sucursal", idioma),
                  font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
 
-    campos = ["Nombre", "Dirección", "Teléfono", "Gerente"]
+    campos_keys = ["nombre", "direccion", "telefono", "gerente"]
     entradas = {}
 
-    for campo in campos:
-        ctk.CTkLabel(ventana, text=campo, text_color="#AAAAAA").pack(anchor="w", padx=30)
+    for key in campos_keys:
+        ctk.CTkLabel(ventana, text=t(key, idioma), text_color="#AAAAAA").pack(anchor="w", padx=30)
         entrada = ctk.CTkEntry(ventana, width=360)
         entrada.pack(padx=30, pady=(2,10))
-        entradas[campo] = entrada
+        entradas[key] = entrada
 
     def guardar(event=None):
-        if not entradas["Nombre"].get().strip():
+        if not entradas["nombre"].get().strip():
             error = ctk.CTkToplevel()
-            error.title("Campo requerido")
+            error.title(t("campo_requerido", idioma))
             error.geometry("300x150")
             error.grab_set()
-            ctk.CTkLabel(error, text="Falta llenar: Nombre",
-                         text_color="#E8751A",
-                         font=ctk.CTkFont(size=14)).pack(pady=30)
-            ctk.CTkButton(error, text="OK", fg_color="#E8751A",
-                          command=error.destroy).pack()
+            ctk.CTkLabel(error, text=f"{t('falta_llenar', idioma)}: {t('nombre', idioma)}",
+                         text_color="#E8751A", font=ctk.CTkFont(size=14)).pack(pady=30)
+            ctk.CTkButton(error, text="OK", fg_color="#E8751A", command=error.destroy).pack()
             return
 
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("""
-            INSERT INTO sucursales (nombre, direccion, telefono, gerente)
-            VALUES (?, ?, ?, ?)
-        """, (
-            entradas["Nombre"].get(),
-            entradas["Dirección"].get(),
-            entradas["Teléfono"].get(),
-            entradas["Gerente"].get(),
-        ))
+        cursor.execute("INSERT INTO sucursales (nombre, direccion, telefono, gerente) VALUES (?, ?, ?, ?)",
+                       (entradas["nombre"].get(), entradas["direccion"].get(),
+                        entradas["telefono"].get(), entradas["gerente"].get()))
         conn.commit()
         conn.close()
         ventana.destroy()
         callback()
 
     ventana.bind("<Return>", guardar)
-    ctk.CTkButton(ventana, text="Guardar", fg_color="#E8751A",
+    ctk.CTkButton(ventana, text=t("guardar", idioma), fg_color="#E8751A",
                   hover_color="#c45e0e", command=guardar).pack(pady=15)
 
 def editar_sucursal(sucursal_id, callback):
+    from config.translations import t
+    idioma = get_idioma()
     conn = conectar()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM sucursales WHERE id=?", (sucursal_id,))
@@ -123,50 +135,43 @@ def editar_sucursal(sucursal_id, callback):
     conn.close()
 
     ventana = ctk.CTkToplevel()
-    ventana.title("Editar Sucursal")
+    ventana.title(t("editar_sucursal", idioma))
     ventana.geometry("420x500")
     ventana.grab_set()
 
-    ctk.CTkLabel(ventana, text="Editar Sucursal",
+    ctk.CTkLabel(ventana, text=t("editar_sucursal", idioma),
                  font=ctk.CTkFont(size=16, weight="bold")).pack(pady=20)
 
-    campos = ["Nombre", "Dirección", "Teléfono", "Gerente"]
+    campos_keys = ["nombre", "direccion", "telefono", "gerente"]
     valores = [s[1], s[2], s[3], s[4]]
     entradas = {}
 
-    for campo, valor in zip(campos, valores):
-        ctk.CTkLabel(ventana, text=campo, text_color="#AAAAAA").pack(anchor="w", padx=30)
+    for key, valor in zip(campos_keys, valores):
+        ctk.CTkLabel(ventana, text=t(key, idioma), text_color="#AAAAAA").pack(anchor="w", padx=30)
         entrada = ctk.CTkEntry(ventana, width=360)
         entrada.insert(0, str(valor) if valor else "")
         entrada.pack(padx=30, pady=(2,10))
-        entradas[campo] = entrada
+        entradas[key] = entrada
 
-    ctk.CTkLabel(ventana, text="Estado", text_color="#AAAAAA").pack(anchor="w", padx=30)
+    ctk.CTkLabel(ventana, text=t("estado", idioma), text_color="#AAAAAA").pack(anchor="w", padx=30)
     activa_var = ctk.BooleanVar(value=bool(s[5]))
-    ctk.CTkCheckBox(ventana, text="Sucursal activa", variable=activa_var,
+    ctk.CTkCheckBox(ventana, text=t("activa", idioma), variable=activa_var,
                     text_color="#FFFFFF").pack(anchor="w", padx=30, pady=(2,10))
 
     def guardar(event=None):
         conn = conectar()
         cursor = conn.cursor()
-        cursor.execute("""
-            UPDATE sucursales SET nombre=?, direccion=?, telefono=?, gerente=?, activa=?
-            WHERE id=?
-        """, (
-            entradas["Nombre"].get(),
-            entradas["Dirección"].get(),
-            entradas["Teléfono"].get(),
-            entradas["Gerente"].get(),
-            int(activa_var.get()),
-            sucursal_id,
-        ))
+        cursor.execute("UPDATE sucursales SET nombre=?, direccion=?, telefono=?, gerente=?, activa=? WHERE id=?",
+                       (entradas["nombre"].get(), entradas["direccion"].get(),
+                        entradas["telefono"].get(), entradas["gerente"].get(),
+                        int(activa_var.get()), sucursal_id))
         conn.commit()
         conn.close()
         ventana.destroy()
         callback()
 
     ventana.bind("<Return>", guardar)
-    ctk.CTkButton(ventana, text="Guardar Cambios", fg_color="#E8751A",
+    ctk.CTkButton(ventana, text=t("guardar_cambios", idioma), fg_color="#E8751A",
                   hover_color="#c45e0e", command=guardar).pack(pady=15)
 
 def borrar_sucursal(sucursal_id, callback):

@@ -9,6 +9,13 @@ from datetime import datetime
 CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "settings.json")
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "database", "motopartes.db")
 
+def get_idioma():
+    try:
+        with open(CONFIG_PATH) as f:
+            return json.load(f).get("idioma", "Español")
+    except:
+        return "Español"
+
 def cargar_config():
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, "r") as f:
@@ -38,16 +45,17 @@ def hacer_respaldo(ruta):
         return False
 
 def mostrar_configuracion(frame, aplicar_tema=None):
+    from config.translations import t
+    idioma = get_idioma()
     config = cargar_config()
 
     content = ctk.CTkFrame(frame, fg_color="#0f0f0f")
     content.pack(fill="both", expand=True, padx=20, pady=20)
 
-    ctk.CTkLabel(content, text="Configuración",
+    ctk.CTkLabel(content, text=t("configuracion", idioma),
                  font=ctk.CTkFont(size=18, weight="bold"),
                  text_color="#FFFFFF").pack(anchor="w", pady=(0,20))
 
-    # Panel General
     panel = ctk.CTkFrame(content, fg_color="#1a1a1a", corner_radius=10)
     panel.pack(fill="x", pady=(0,15))
 
@@ -56,9 +64,9 @@ def mostrar_configuracion(frame, aplicar_tema=None):
                  text_color="#E8751A").pack(anchor="w", padx=15, pady=(12,8))
 
     campos = [
-        ("Nombre del negocio", "nombre_negocio"),
-        ("Moneda", "moneda"),
-        ("Stock mínimo por defecto", "stock_minimo"),
+        (t("nombre_negocio", idioma), "nombre_negocio"),
+        (t("moneda", idioma), "moneda"),
+        (t("stock_minimo", idioma), "stock_minimo"),
     ]
 
     entradas = {}
@@ -74,7 +82,7 @@ def mostrar_configuracion(frame, aplicar_tema=None):
 
     fila_idioma = ctk.CTkFrame(panel, fg_color="transparent")
     fila_idioma.pack(fill="x", padx=15, pady=4)
-    ctk.CTkLabel(fila_idioma, text="Idioma", text_color="#AAAAAA",
+    ctk.CTkLabel(fila_idioma, text=t("idioma", idioma), text_color="#AAAAAA",
                  width=200, anchor="w").pack(side="left")
     idioma_var = ctk.StringVar(value=config.get("idioma", "Español"))
     ctk.CTkOptionMenu(fila_idioma, values=["Español", "English"],
@@ -82,24 +90,23 @@ def mostrar_configuracion(frame, aplicar_tema=None):
 
     fila_tema = ctk.CTkFrame(panel, fg_color="transparent")
     fila_tema.pack(fill="x", padx=15, pady=(4,12))
-    ctk.CTkLabel(fila_tema, text="Tema", text_color="#AAAAAA",
+    ctk.CTkLabel(fila_tema, text=t("tema", idioma), text_color="#AAAAAA",
                  width=200, anchor="w").pack(side="left")
     tema_var = ctk.StringVar(value=config.get("tema", "dark"))
     ctk.CTkOptionMenu(fila_tema, values=["dark", "light"],
                       variable=tema_var, width=250).pack(side="left")
 
-    # Panel Respaldo
     panel_respaldo = ctk.CTkFrame(content, fg_color="#1a1a1a", corner_radius=10)
     panel_respaldo.pack(fill="x", pady=(0,15))
 
-    ctk.CTkLabel(panel_respaldo, text="Respaldo en la nube",
+    ctk.CTkLabel(panel_respaldo, text=t("respaldo_nube", idioma),
                  font=ctk.CTkFont(size=13, weight="bold"),
                  text_color="#E8751A").pack(anchor="w", padx=15, pady=(12,8))
 
     fila_ruta = ctk.CTkFrame(panel_respaldo, fg_color="transparent")
     fila_ruta.pack(fill="x", padx=15, pady=4)
 
-    ctk.CTkLabel(fila_ruta, text="Carpeta de respaldo", text_color="#AAAAAA",
+    ctk.CTkLabel(fila_ruta, text=t("carpeta_respaldo", idioma), text_color="#AAAAAA",
                  width=200, anchor="w").pack(side="left")
 
     entrada_ruta = ctk.CTkEntry(fila_ruta, width=180)
@@ -107,12 +114,12 @@ def mostrar_configuracion(frame, aplicar_tema=None):
     entrada_ruta.pack(side="left", padx=(0,8))
 
     def seleccionar_carpeta():
-        carpeta = filedialog.askdirectory(title="Selecciona carpeta de OneDrive o nube")
+        carpeta = filedialog.askdirectory(title="Selecciona carpeta")
         if carpeta:
             entrada_ruta.delete(0, "end")
             entrada_ruta.insert(0, carpeta)
 
-    ctk.CTkButton(fila_ruta, text="Seleccionar", width=80,
+    ctk.CTkButton(fila_ruta, text=t("seleccionar", idioma), width=80,
                   fg_color="#333333", hover_color="#444444",
                   command=seleccionar_carpeta).pack(side="left")
 
@@ -126,11 +133,11 @@ def mostrar_configuracion(frame, aplicar_tema=None):
     def respaldar_ahora():
         ruta = entrada_ruta.get()
         if hacer_respaldo(ruta):
-            respaldo_status.configure(text="✅ Respaldo exitoso", text_color="#3B6D11")
+            respaldo_status.configure(text="✅ OK", text_color="#3B6D11")
         else:
-            respaldo_status.configure(text="❌ Error — verifica la ruta", text_color="#A32D2D")
+            respaldo_status.configure(text="❌ Error", text_color="#A32D2D")
 
-    ctk.CTkButton(fila_respaldo_btn, text="Respaldar ahora", width=130,
+    ctk.CTkButton(fila_respaldo_btn, text=t("respaldar_ahora", idioma), width=130,
                   fg_color="#1a3a1a", hover_color="#2a5a2a",
                   command=respaldar_ahora).pack(side="left")
 
@@ -150,15 +157,13 @@ def mostrar_configuracion(frame, aplicar_tema=None):
             return
 
         exito = ctk.CTkToplevel()
-        exito.title("Guardado")
+        exito.title("OK")
         exito.geometry("300x130")
         exito.grab_set()
-        ctk.CTkLabel(exito, text="✅ Configuración guardada",
-                     text_color="#FFFFFF",
-                     font=ctk.CTkFont(size=14)).pack(pady=30)
-        ctk.CTkButton(exito, text="OK", fg_color="#E8751A",
-                      command=exito.destroy).pack()
+        ctk.CTkLabel(exito, text=t("config_guardada", idioma),
+                     text_color="#FFFFFF", font=ctk.CTkFont(size=14)).pack(pady=30)
+        ctk.CTkButton(exito, text="OK", fg_color="#E8751A", command=exito.destroy).pack()
 
-    ctk.CTkButton(content, text="Guardar Configuración",
+    ctk.CTkButton(content, text=t("guardar_config", idioma),
                   fg_color="#E8751A", hover_color="#c45e0e",
                   command=guardar).pack(anchor="w", pady=15)
