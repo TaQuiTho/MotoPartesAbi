@@ -9,6 +9,7 @@ TRADUCCIONES = {
         "sucursales": "Sucursales",
         "reportes": "Reportes",
         "configuracion": "Configuración",
+
         "panel_principal": "Panel Principal",
         "sucursal_matriz": "📍 Sucursal Matriz",
         "resumen_operaciones": "Resumen de Operaciones",
@@ -21,27 +22,53 @@ TRADUCCIONES = {
         "sin_alertas": "✔  Sin alertas por el momento. El sistema funciona correctamente.",
         "inventario_reciente": "Inventario Reciente",
         "realizar_venta": "Realizar Venta  →",
+        "mensaje_accion": "Gestiona tu tienda de manera eficiente con un solo toque.",
+
         "stock_bajo": "Stock Bajo",
         "stock_alto": "Stock Alto",
+        "agotado": "Agotado",
+        "agotado_stock": "Agotado",
+        "stock": "Stock",
+        "codigo": "Código",
+        "estado_stock": "Estado",
         "sin_productos": "Sin productos registrados",
+        "sin_productos_reg": "Sin productos registrados",
+        "sin_productos_comp": "Sin productos compatibles",
+
         "actualizado": "Actualizado",
         "ver_todos": "Ver todos",
+        "buscar": "Buscar",
+
         "agregar_producto": "Agregar Producto",
         "editar_producto": "Editar Producto",
+        "producto": "Producto",
+        "productos": "Productos",
         "nombre": "Nombre",
         "marca": "Marca",
+        "sku": "SKU",
         "cantidad": "Cantidad",
         "precio_costo": "Precio Costo",
         "precio_menudeo": "Precio Menudeo",
         "precio_mayoreo": "Precio Mayoreo",
         "descripcion": "Descripción",
+        "stock_minimo": "Stock mínimo por defecto",
+
         "guardar": "Guardar",
         "guardar_cambios": "Guardar Cambios",
         "editar": "Editar",
         "borrar": "Borrar",
+        "eliminar": "Eliminar",
+        "aceptar": "Aceptar",
+        "cancelar": "Cancelar",
+        "cerrar": "Cerrar",
+
         "campo_requerido": "Campo requerido",
         "falta_llenar": "Falta llenar",
-        "sin_productos_reg": "Sin productos registrados",
+        "error": "Error",
+        "exito": "Éxito",
+        "sin_datos": "Sin datos disponibles",
+        "producto_no_encontrado": "Producto no encontrado",
+
         "nuevo_cliente": "Nuevo Cliente",
         "editar_cliente": "Editar Cliente",
         "telefono": "Teléfono",
@@ -49,14 +76,17 @@ TRADUCCIONES = {
         "direccion": "Dirección",
         "notas": "Notas",
         "sin_clientes": "Sin clientes registrados",
+
         "nuevo_proveedor": "Nuevo Proveedor",
         "editar_proveedor": "Editar Proveedor",
         "sin_proveedores": "Sin proveedores registrados",
+
         "nueva_venta": "Nueva Venta",
         "registrar_venta": "Registrar Venta",
-        "producto": "Producto",
+        "venta_guardada": "Venta registrada correctamente",
         "total": "Total",
         "sin_ventas": "Sin ventas registradas",
+
         "nuevo_apartado": "Nuevo Apartado",
         "editar_apartado": "Editar Apartado",
         "fecha_entrega": "Fecha de entrega",
@@ -65,12 +95,14 @@ TRADUCCIONES = {
         "entregado": "Entregado",
         "entregar": "Entregar",
         "sin_apartados": "Sin apartados registrados",
+
         "nueva_sucursal": "Nueva Sucursal",
         "editar_sucursal": "Editar Sucursal",
         "gerente": "Gerente",
         "activa": "Activa",
         "inactiva": "Inactiva",
         "sin_sucursales": "Sin sucursales registradas",
+
         "resumen_ventas": "Resumen de Ventas",
         "hoy": "Hoy",
         "esta_semana": "Esta semana",
@@ -78,19 +110,30 @@ TRADUCCIONES = {
         "exportar_excel": "⬇ Exportar Excel",
         "exportar_todo": "⬇ Exportar Todo",
         "clientes_frecuentes": "Clientes Frecuentes",
+
         "guardar_config": "Guardar Configuración",
         "nombre_negocio": "Nombre del negocio",
         "moneda": "Moneda",
-        "stock_minimo": "Stock mínimo por defecto",
         "idioma": "Idioma",
         "tema": "Tema",
+        "general": "General",
+        "version": "Versión",
+
         "respaldo_nube": "Respaldo en la nube",
         "carpeta_respaldo": "Carpeta de respaldo",
         "seleccionar": "Seleccionar",
         "respaldar_ahora": "Respaldar ahora",
+        "restaurar_respaldo": "Restaurar respaldo",
         "config_guardada": "✅ Configuración guardada",
-        "sku": "SKU",
+        "respaldo_creado": "Respaldo creado correctamente",
+        "respaldo_error": "No se pudo crear el respaldo",
+        "base_restaurada": "Base de datos restaurada correctamente",
+
+        "filtro_compatibilidad": "🚗 Filtro de Compatibilidad (Garaje)",
+        "todos_vehiculos": "Todos los Vehículos",
+        "error_seleccion_prod": "Selecciona un producto válido.",
     },
+
     "English": {
         "panel": "Dashboard",
         "inventario": "Inventory",
@@ -101,6 +144,7 @@ TRADUCCIONES = {
         "sucursales": "Branches",
         "reportes": "Reports",
         "configuracion": "Settings",
+
         "panel_principal": "Main Dashboard",
         "sucursal_matriz": "📍 Main Branch",
         "resumen_operaciones": "Operations Summary",
@@ -113,27 +157,53 @@ TRADUCCIONES = {
         "sin_alertas": "✔  No alerts at the moment. System is running correctly.",
         "inventario_reciente": "Recent Inventory",
         "realizar_venta": "Make a Sale  →",
+        "mensaje_accion": "Manage your store efficiently with a single click.",
+
         "stock_bajo": "Low Stock",
         "stock_alto": "In Stock",
+        "agotado": "Out of Stock",
+        "agotado_stock": "Out of Stock",
+        "stock": "Stock",
+        "codigo": "Code",
+        "estado_stock": "Status",
         "sin_productos": "No products registered",
+        "sin_productos_reg": "No products registered",
+        "sin_productos_comp": "No compatible products",
+
         "actualizado": "Updated",
         "ver_todos": "View all",
+        "buscar": "Search",
+
         "agregar_producto": "Add Product",
         "editar_producto": "Edit Product",
+        "producto": "Product",
+        "productos": "Products",
         "nombre": "Name",
         "marca": "Brand",
+        "sku": "SKU",
         "cantidad": "Quantity",
         "precio_costo": "Cost Price",
         "precio_menudeo": "Retail Price",
         "precio_mayoreo": "Wholesale Price",
         "descripcion": "Description",
+        "stock_minimo": "Default minimum stock",
+
         "guardar": "Save",
         "guardar_cambios": "Save Changes",
         "editar": "Edit",
         "borrar": "Delete",
+        "eliminar": "Delete",
+        "aceptar": "Accept",
+        "cancelar": "Cancel",
+        "cerrar": "Close",
+
         "campo_requerido": "Required field",
         "falta_llenar": "Missing field",
-        "sin_productos_reg": "No products registered",
+        "error": "Error",
+        "exito": "Success",
+        "sin_datos": "No data available",
+        "producto_no_encontrado": "Product not found",
+
         "nuevo_cliente": "New Client",
         "editar_cliente": "Edit Client",
         "telefono": "Phone",
@@ -141,14 +211,17 @@ TRADUCCIONES = {
         "direccion": "Address",
         "notas": "Notes",
         "sin_clientes": "No clients registered",
+
         "nuevo_proveedor": "New Supplier",
         "editar_proveedor": "Edit Supplier",
         "sin_proveedores": "No suppliers registered",
+
         "nueva_venta": "New Sale",
         "registrar_venta": "Register Sale",
-        "producto": "Product",
+        "venta_guardada": "Sale registered successfully",
         "total": "Total",
         "sin_ventas": "No sales registered",
+
         "nuevo_apartado": "New Layaway",
         "editar_apartado": "Edit Layaway",
         "fecha_entrega": "Delivery date",
@@ -157,12 +230,14 @@ TRADUCCIONES = {
         "entregado": "Delivered",
         "entregar": "Deliver",
         "sin_apartados": "No layaways registered",
+
         "nueva_sucursal": "New Branch",
         "editar_sucursal": "Edit Branch",
         "gerente": "Manager",
         "activa": "Active",
         "inactiva": "Inactive",
         "sin_sucursales": "No branches registered",
+
         "resumen_ventas": "Sales Summary",
         "hoy": "Today",
         "esta_semana": "This week",
@@ -170,20 +245,40 @@ TRADUCCIONES = {
         "exportar_excel": "⬇ Export Excel",
         "exportar_todo": "⬇ Export All",
         "clientes_frecuentes": "Frequent Clients",
+
         "guardar_config": "Save Settings",
         "nombre_negocio": "Business name",
         "moneda": "Currency",
-        "stock_minimo": "Default minimum stock",
         "idioma": "Language",
         "tema": "Theme",
+        "general": "General",
+        "version": "Version",
+
         "respaldo_nube": "Cloud backup",
         "carpeta_respaldo": "Backup folder",
         "seleccionar": "Select",
         "respaldar_ahora": "Backup now",
+        "restaurar_respaldo": "Restore backup",
         "config_guardada": "✅ Settings saved",
-        "sku": "SKU",
+        "respaldo_creado": "Backup created successfully",
+        "respaldo_error": "Backup could not be created",
+        "base_restaurada": "Database restored successfully",
+
+        "filtro_compatibilidad": "🚗 Compatibility Filter (Garage)",
+        "todos_vehiculos": "All Vehicles",
+        "error_seleccion_prod": "Select a valid product.",
     }
 }
 
+
 def t(key, idioma="Español"):
-    return TRADUCCIONES.get(idioma, TRADUCCIONES["Español"]).get(key, key)
+    try:
+        return TRADUCCIONES.get(
+            idioma,
+            TRADUCCIONES["Español"]
+        ).get(
+            key,
+            TRADUCCIONES["Español"].get(key, key)
+        )
+    except Exception:
+        return key
